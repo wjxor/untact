@@ -43,21 +43,14 @@ public class UsrArticleController {
 
 	@RequestMapping("/usr/article/doAdd")
 	@ResponseBody
-	public Map<String, Object> doAdd(String title, String body) {		
+	public Map<String, Object> doAdd(String title, String body) {
 		String regDate = Util.getNowDateStr();
-		String updateDate = regDate; 
-		
+		String updateDate = regDate;
+
 		articles.add(new Article(++articlesLastId, regDate, updateDate, title, body));
 
-		Map<String, Object> rs = new HashMap<>();
-		rs.put("resultCode", "S-1");
-		rs.put("msg", "성공하였습니다.");
-		rs.put("id", articlesLastId);
-
-		return rs;
+		return Util.mapOf("resultCode", "S-1", "msg", "성공하였습니다.", "id", articlesLastId);
 	}
-
-	
 
 	@RequestMapping("/usr/article/doDelete")
 	@ResponseBody
@@ -65,20 +58,12 @@ public class UsrArticleController {
 		boolean deleteArticleRs = deleteArticle(id);
 
 		Map<String, Object> rs = new HashMap<>();
-		
-		if (deleteArticleRs) {
-			rs.put("resultCode", "S-1");
-			rs.put("msg", "성공하였습니다.");
-		}
-		
-		else {
-			rs.put("resultCode", "F-1");
-			rs.put("msg", "해당 게시물은 존재하지 않습니다.");
-		}
-		
-		rs.put("id", id);
 
-		return rs;
+		if (deleteArticleRs == false) {
+			return Util.mapOf("resultCode", "F-1", "msg", "해당 게시물은 존재하지 않습니다.");
+		}
+
+		return Util.mapOf("resultCode", "S-1", "msg", "성공하였습니다.", "id", id);
 
 	}
 
@@ -86,44 +71,37 @@ public class UsrArticleController {
 		for (Article article : articles) {
 			if (article.getId() == id) {
 				articles.remove(article);
-				
+
 				return true;
 			}
 		}
-		
+
 		return false;
-		
+
 	}
-	
+
 	@RequestMapping("/usr/article/doModify")
 	@ResponseBody
 	public Map<String, Object> doModify(int id, String title, String body) {
 		Article selArticle = null;
-		
+
 		for (Article article : articles) {
 			if (article.getId() == id) {
 				selArticle = article;
 				break;
 			}
 		}
-		
+
 		Map<String, Object> rs = new HashMap<>();
-		
+
 		if (selArticle == null) {
-			rs.put("resultCode", "F-1");
-			rs.put("msg", String.format("%d번 게시물은 존재하지 않습니다.", id));
-			
-			return rs;
+			return Util.mapOf("resultCode", "F-1", "msg", String.format("%d번 게시물은 존재하지 않습니다.", id));
 		}
-		
+
 		selArticle.setUpdateDate(Util.getNowDateStr());
 		selArticle.setTitle(title);
 		selArticle.setBody(body);
-		
-		rs.put("resultCode", "S-1");
-		rs.put("msg", String.format("%d번 게시물이 수정되었습니다.", id));
-		rs.put("id", id);
 
-		return rs;
+		return Util.mapOf("resultCode", "S-1", "msg", String.format("%d번 게시물이 수정되었습니다.", id), "id", id);
 	}
 }
