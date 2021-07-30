@@ -38,11 +38,11 @@ public class UsrArticleController {
 	@RequestMapping("/usr/article/doAdd")
 	@ResponseBody
 	public ResultData doAdd(String title, String body) {
-		if (title != null) {
+		if (title == null) {
 			return new ResultData("F-1", "제목을 입력해주세요.");
 		}
 
-		if (body != null) {
+		if (body == null) {
 			return new ResultData("F-1", "내용을 입력해주세요.");
 		}
 
@@ -52,7 +52,11 @@ public class UsrArticleController {
 
 	@RequestMapping("/usr/article/doDelete")
 	@ResponseBody
-	public ResultData doDelete(int id) {
+	public ResultData doDelete(Integer id) {
+		if (id == null) {
+			return new ResultData("F-1", "id를 입력해주세요.");
+		}
+
 		Article article = articleService.getArticle(id);
 
 		if (article == null) {
@@ -65,11 +69,23 @@ public class UsrArticleController {
 
 	@RequestMapping("/usr/article/doModify")
 	@ResponseBody
-	public ResultData doModify(int id, String title, String body) {
-		Article selArticle = null;
+	public ResultData doModify(Integer id, String title, String body) {
+		if (id == null) {
+			return new ResultData("F-1", "id를 입력해주세요.");
+		}
 
-		if (selArticle == null) {
-			return new ResultData("F-1", String.format("%d번 게시물은 존재하지 않습니다.", id));
+		if (title == null) {
+			return new ResultData("F-1", "제목을 입력해주세요.");
+		}
+
+		if (body == null) {
+			return new ResultData("F-1", "내용을 입력해주세요.");
+		}
+
+		Article article = articleService.getArticle(id);
+
+		if (article == null) {
+			return new ResultData("F-1", "해당 게시물은 존재하지 않습니다.");
 		}
 
 		return articleService.modify(id, title, body);
